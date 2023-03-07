@@ -56,12 +56,19 @@ class RoomService {
         let winner = null;
 
         this.winCombination.forEach(singleCombination => {
-            if (playedGameGrid[singleCombination[0]] &&
+            const isAllValueExists = playedGameGrid[singleCombination[0]] &&
                 playedGameGrid[singleCombination[1]] &&
-                playedGameGrid[singleCombination[2]] &&
-                playedGameGrid[singleCombination[0]]['player'] === playedGameGrid[singleCombination[1]]['player'] &&
-                playedGameGrid[singleCombination[1]]['player'] === playedGameGrid[singleCombination[2]]['player']
-            ) {
+                playedGameGrid[singleCombination[2]];
+
+            if (!isAllValueExists) {
+                return;
+            }
+
+            const value1 = playedGameGrid[singleCombination[0]]['player']; // O or X
+            const value2 = playedGameGrid[singleCombination[1]]['player']; // O or X
+            const value3 = playedGameGrid[singleCombination[2]]['player'];  // O or X
+
+            if (value1 === value2 && value2 === value3) {
                 winner = playedGameGrid[singleCombination[0]]['player'] + ' Wins !';
             }
         });

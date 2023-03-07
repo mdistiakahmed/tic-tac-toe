@@ -1,5 +1,6 @@
 import { Component, ViewChild, OnInit, ElementRef } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/service/app.service';
 import { AvailableRoomResponseType, CreateRoomResponseType, GameResultResponseType, GameStartResponseType, ReceiveMoveResponseType } from 'src/app/types/ResponseType';
 
@@ -25,6 +26,7 @@ export class GameComponent implements OnInit {
   roomNumber: number = 0;
   playedText: string = '';
   whoseTurn = 'X';
+  subscriptions: Subscription[] = [];
 
   constructor(
     private modalService: NgbModal,
@@ -40,25 +42,34 @@ export class GameComponent implements OnInit {
       this.emptyRooms = response['emptyRooms'];
     });
 
-    this.appService.getRoomsAvailable().subscribe((response: AvailableRoomResponseType) => {
+    const getRoomsAvailableSubscription = this.appService.getRoomsAvailable().subscribe((response: AvailableRoomResponseType) => {
       this.emptyRooms = response['emptyRooms'];
     });
+    this.subscriptions.push(getRoomsAvailableSubscription);
 
-    this.appService.receivePlayerMove().subscribe((response: ReceiveMoveResponseType) => {
+    const receivePlayerMoveSubscription = this.appService.receivePlayerMove().subscribe((response: ReceiveMoveResponseType) => {
       this.opponentMove(response);
     });
+    this.subscriptions.push(receivePlayerMoveSubscription);
 
-    this.appService.gameResult().subscribe((response: GameResultResponseType) => {
+
+    const gameResultSubscription = this.appService.gameResult().subscribe((response: GameResultResponseType) => {
       alert(response['winner']);
       this.resetGame();
     });
+    this.subscriptions.push(gameResultSubscription);
 
-    this.appService.playerLeft().subscribe(() => {
+    const playerLeftSubscription = this.appService.playerLeft().subscribe(() => {
       alert('Player Left');
       window.location.reload();
     });
+    this.subscriptions.push(playerLeftSubscription);
 
 
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   public ngAfterViewInit() {
