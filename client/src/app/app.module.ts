@@ -4,10 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { HttpClientModule } from '@angular/common/http';
+import { GameComponent } from './components/game/game.component';
+
+const BACK_END_URL = 'http://localhost:3000';
 
 
 const config: SocketIoConfig = {
-  url: 'http://localhost:3000',
+  url: BACK_END_URL,
   options: {
     transports: ['websocket']
   }
@@ -15,7 +18,8 @@ const config: SocketIoConfig = {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
